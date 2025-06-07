@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using JetBrains.Annotations;
 
 public class Spieler : MonoBehaviour
 {
@@ -13,7 +14,9 @@ public class Spieler : MonoBehaviour
     public TextMeshProUGUI lebenAnzeige;
 
     float zeitStart;
+    public float? zeit;
     bool spielGestartet = false;
+    public bool spielBeendet = false;
     public TextMeshProUGUI zeitAnzeige;
 
     public TextMeshProUGUI zeitAltAnzeige;
@@ -88,10 +91,12 @@ public class Spieler : MonoBehaviour
             {
                 infoAnzeige.text = "Du hast gewonnen!";
                 spielGestartet = false;
+                spielBeendet = true;
                 gameObject.SetActive(false);
                 gewinn.SetActive(false);
                 punkteAnzeige.text = "Gewonnen";
-                PlayerPrefs.SetFloat("zeitAlt", Time.time - zeitStart);
+                zeit = Time.time - zeitStart;
+                PlayerPrefs.SetFloat("zeitAlt", zeit ?? 0f);
                 PlayerPrefs.Save();
             }
             float xNeu = Random.Range(-8.0f, 8.0f);
@@ -150,6 +155,8 @@ public class Spieler : MonoBehaviour
         if (spielGestartet)
             return;
 
+        spielBeendet = false;
+        zeit = null;
         anzahlPunkte = 0;
         anzahlLeben = 3;
         float zeitAlt = 0;
