@@ -10,6 +10,7 @@ public class Highscore : MonoBehaviour
     public int numbreEntries = 0;
     public Spieler SpielerKlasse;
     public TMP_InputField inputName;
+    public bool highscoreSafedYet = false;
 
     [System.Serializable]
     public class SaveData
@@ -45,13 +46,24 @@ public class Highscore : MonoBehaviour
         }
         else
         {
-            // Keine Datei vorhanden: leere Liste anlegen
             saveData = new SaveDataList { saves = new SaveData[0] };
         }
 
-        System.Array.Sort(saveData.saves, (a, b) => a.recordTime.CompareTo(b.recordTime));
-
+        // Nur die beste Zeit pro Name behalten
+        var bestTimes = new Dictionary<string, SaveData>();
         foreach (var entry in saveData.saves)
+        {
+            if (!bestTimes.ContainsKey(entry.name) || entry.recordTime < bestTimes[entry.name].recordTime)
+            {
+                bestTimes[entry.name] = entry;
+            }
+        }
+
+        // Nach Zeit sortieren
+        var sorted = new List<SaveData>(bestTimes.Values);
+        sorted.Sort((a, b) => a.recordTime.CompareTo(b.recordTime));
+
+        foreach (var entry in sorted)
         {
             newEntry(entry.name, entry.recordTime);
             numbreEntries++;
@@ -88,7 +100,7 @@ public class Highscore : MonoBehaviour
     {
         if (SpielerKlasse.spielBeendet && inputName.text != "" && SpielerKlasse.zeit != null)
         {
-            if (inputName.text.Length < 10)
+            if (inputName.text.Length < 14)
             {
                 string path = Path.Combine(Application.persistentDataPath, "saveData.json");
                 SaveDataList saveData;
@@ -113,6 +125,7 @@ public class Highscore : MonoBehaviour
                 SpielerKlasse.infoAnzeige.text = "Highscore gespeichert!";
                 deleteEntries();
                 LoadData();
+                highscoreSafedYet = true;
             }
             else
             {
@@ -122,4 +135,11 @@ public class Highscore : MonoBehaviour
         }
     }
 
+    void Update()
+    {
+        if (!highscoreSafedYet)
+        {
+            saveCurrent();
+        }
+    }
 }

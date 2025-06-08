@@ -38,10 +38,10 @@ public class MaintainAspectRatio : MonoBehaviour
 
     private int lastWidth, lastHeight;
 
-    /*void OnApplicationQuit()
+    void OnApplicationQuit()
     {
         Application.Quit();
         System.Diagnostics.Process.GetCurrentProcess().Kill();
-    }*/
+    }
 
 }

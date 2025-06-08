@@ -17,6 +17,7 @@ public class Spieler : MonoBehaviour
     public float? zeit;
     bool spielGestartet = false;
     public bool spielBeendet = false;
+    public Highscore highscoreClass;
     public TextMeshProUGUI zeitAnzeige;
 
     public TextMeshProUGUI zeitAltAnzeige;
@@ -32,33 +33,45 @@ public class Spieler : MonoBehaviour
 
     void Update()
     {
-        float horizontalInput = Input.GetAxis("Horizontal");
-        float verticalInput = Input.GetAxis("Vertical");
+        float horizontalInput = Input.GetAxis("Horizontal"); ;
+        float verticalInput = Input.GetAxis("Vertical"); ;
 
-        if (verticalInput < 0)
+
+        if (highscoreClass.inputName.text != "")
         {
-            return;
-        }
 
-        float horizontalNew = transform.position.x + horizontalInput * inputFactor * Time.deltaTime;
-        if (horizontalNew > 8.3f)
-        {
-            horizontalNew = 8.3f;
-        }
-        if (horizontalNew < -8.3f)
-        {
-            horizontalNew = -8.3f;
-        }
+            if (verticalInput < 0)
+            {
+                return;
+            }
 
-        float verticalNew = transform.position.y + verticalInput * inputFactor * Time.deltaTime;
+            float horizontalNew = transform.position.x + horizontalInput * inputFactor * Time.deltaTime;
+            if (horizontalNew > 8.3f)
+            {
+                horizontalNew = 8.3f;
+            }
+            if (horizontalNew < -8.3f)
+            {
+                horizontalNew = -8.3f;
+            }
 
-        transform.position = new Vector3(horizontalNew, verticalNew, 0);
+            float verticalNew = transform.position.y + verticalInput * inputFactor * Time.deltaTime;
+
+            transform.position = new Vector3(horizontalNew, verticalNew, 0);
+        }
 
         if (!spielGestartet && (horizontalInput != 0 || verticalInput != 0))
         {
-            spielGestartet = true;
-            zeitStart = Time.time;
-            infoAnzeige.text = "";
+            if (highscoreClass.inputName.text != "")
+            {
+                spielGestartet = true;
+                zeitStart = Time.time;
+                infoAnzeige.text = "";
+            }
+            else
+            {
+                infoAnzeige.text = "Gebe Sie erst Ihren Namen ein";
+            }
         }
         if (spielGestartet)
         {
@@ -176,6 +189,8 @@ Sammle die Bananen, und vermeide die Tiger.";
 
         gewinn.transform.position = new Vector3(4, -2.7f, 0);
         gewinn.SetActive(true);
+
+        highscoreClass.highscoreSafedYet = false;
     }
 
     public void AnwendungBeendenButton_Click()
